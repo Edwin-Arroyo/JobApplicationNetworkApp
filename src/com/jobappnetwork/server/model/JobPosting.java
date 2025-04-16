@@ -13,15 +13,10 @@ public class JobPosting {
     private String salary;
 
     /**
-     * Creates a new job posting.
-     * 
-     * @param id          The job posting ID
-     * @param title       The job title
-     * @param company     The company name
-     * @param location    The job location
-     * @param description The job description
-     * @param skills      Required skills
-     * @param salary      Salary range
+     * Step 4: Hiring Manager selects 'Create a job posting' (GUI triggers this
+     * constructor)
+     * Step 5: Server receives JobPosting and sends it to users (JobPosting object
+     * is created and distributed)
      */
     public JobPosting(String id, String title, String company, String location,
             String description, String skills, String salary) {
@@ -98,9 +93,13 @@ public class JobPosting {
     }
 
     /**
-     * Returns a string representation of the job posting.
-     * 
-     * @return A formatted string with job details
+     * Step 12: Update a job posting (A new JobPosting object may be created with
+     * updated info)
+     */
+    // (No setters present, but updating would involve creating a new JobPosting)
+
+    /**
+     * Step 14: Print out updated posting (toString() used to display job posting)
      */
     @Override
     public String toString() {
