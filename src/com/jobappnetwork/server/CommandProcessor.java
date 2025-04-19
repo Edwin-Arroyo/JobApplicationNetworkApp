@@ -35,9 +35,13 @@ public class CommandProcessor {
      * @return The response to send back to the client
      */
     public String processCommand(int command) {
+        // System.out.println("Debug - Processing command: " +
+        // Protocol.getCommandName(command));
+
         switch (command) {
             case Protocol.VIEW_JOBS:
                 // Step 6: View job postings
+                // System.out.println("Debug - Handling VIEW_JOBS command");
                 return dataManager.getAllJobPostings();
 
             case Protocol.VIEW_APPLICATIONS:
@@ -62,6 +66,9 @@ public class CommandProcessor {
      * @return The response to send back to the client
      */
     public String processCommandWithData(int command, String data) {
+        // System.out.println("Debug - Processing command: " +
+        // Protocol.getCommandName(command) + ", data: " + data);
+
         switch (command) {
             case Protocol.POST_JOB:
                 return dataManager.createJobPosting(data);

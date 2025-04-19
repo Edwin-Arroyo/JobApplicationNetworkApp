@@ -37,20 +37,22 @@ public class DataManager {
      */
     public String createJobPosting(String jobData) {
         try {
-            String[] listingData = jobData.split("\\|");
-            if (listingData.length < 6) {
-                return "Error: Invalid job data format";
+            String[] parts = jobData.split("\\|");
+            // System.out.println("Debug - Received job data parts: " +
+            // Arrays.toString(parts));
+            if (parts.length != 6) {
+                return "ERROR: Invalid job data format - Expected 6 parts, got " + parts.length;
             }
 
             String jobId = "JOB" + nextJobId++;
             JobPosting job = new JobPosting(
                     jobId,
-                    listingData[0], // title
-                    listingData[1], // company
-                    listingData[2], // location
-                    listingData[3], // description
-                    listingData[4], // skills
-                    listingData[5] // salary
+                    parts[0], // title
+                    parts[1], // company
+                    parts[2], // location
+                    parts[3], // description
+                    parts[4], // skills
+                    parts[5] // salary
             );
 
             jobPostings.put(jobId, job);
@@ -66,13 +68,16 @@ public class DataManager {
      */
     public String createApplication(String applicationData) {
         try {
-            String[] listingData = applicationData.split("\\|");
-            if (listingData.length < 2) {
-                return "Error: Invalid application data format";
+            String[] parts = applicationData.split("\\|");
+            // System.out.println("Debug - DataManager: Received application data parts: " +
+            // Arrays.toString(parts));
+            if (parts.length != 3) {
+                return "ERROR: Invalid application data format - Expected 3 parts (jobId|applicantId|resume), got "
+                        + parts.length;
             }
 
-            String jobId = listingData[0];
-            String resume = listingData[1];
+            String jobId = parts[0];
+            String resume = parts[2];
 
             // Check if the job exists
             if (!jobPostings.containsKey(jobId)) {
@@ -134,6 +139,10 @@ public class DataManager {
      * Step 14: Print out updated posting (job postings are formatted and returned)
      */
     public String getAllJobPostings() {
+        // System.out.println("Debug - Getting all job postings. Current count: " +
+        // jobPostings.size());
+        // System.out.println("Debug - Job postings map: " + jobPostings);
+
         if (jobPostings.isEmpty()) {
             return "No job postings available";
         }

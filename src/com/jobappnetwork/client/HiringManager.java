@@ -42,7 +42,7 @@ public class HiringManager {
             System.out.println("2. View Applications");
             System.out.println("3. Accept an Application");
             System.out.println("4. Reject an Application");
-            System.out.println("5. Back to Main Menu");
+            System.out.println("5. Disconnect from the server");
             System.out.print("Enter your choice: ");
 
             int choice = getIntInput();
@@ -97,14 +97,19 @@ public class HiringManager {
         String salaryRange = scanner.nextLine();
 
         // Format job data for transmission
-        String jobData = jobTitle + "|" + companyName + "|" + location + "|" +
-                description + "|" + skills + "|" + salaryRange;
+        String jobData = String.format("%s|%s|%s|%s|%s|%s",
+                jobTitle, // parts[0] - title
+                companyName, // parts[1] - company
+                description, // parts[2] - description
+                location, // parts[3] - location
+                skills, // parts[4] - skills
+                salaryRange // parts[5] - salary
+        );
 
-        // Send job posting to server
-        String response = clientInteraction.sendCommand(Protocol.POST_JOB);
+        // System.out.println("Debug - Sending job data: " + jobData);
 
-        // Send the job data
-        response = clientInteraction.sendCommandWithData(Protocol.POST_JOB, jobData);
+        // Send the job data directly without sending a separate command first
+        String response = clientInteraction.sendCommandWithData(Protocol.POST_JOB, jobData);
 
         // Display the response
         System.out.println(response);
@@ -138,11 +143,10 @@ public class HiringManager {
         System.out.print("Enter application ID to accept: ");
         String applicationId = scanner.nextLine();
 
-        // Send accept application request to server
-        String response = clientInteraction.sendCommand(Protocol.ACCEPT_APPLICATION);
-
         // Send the application ID
-        response = clientInteraction.sendCommandWithData(Protocol.ACCEPT_APPLICATION, applicationId);
+        // System.out.println("Debug - HiringManager: Sending application ID to accept:
+        // " + applicationId);
+        String response = clientInteraction.sendCommandWithData(Protocol.ACCEPT_APPLICATION, applicationId);
 
         // Display the response
         System.out.println(response);
@@ -160,11 +164,10 @@ public class HiringManager {
         System.out.print("Enter application ID to reject: ");
         String applicationId = scanner.nextLine();
 
-        // Send reject application request to server
-        String response = clientInteraction.sendCommand(Protocol.REJECT_APPLICATION);
-
         // Send the application ID
-        response = clientInteraction.sendCommandWithData(Protocol.REJECT_APPLICATION, applicationId);
+        // System.out.println("Debug - HiringManager: Sending application ID to reject:
+        // " + applicationId);
+        String response = clientInteraction.sendCommandWithData(Protocol.REJECT_APPLICATION, applicationId);
 
         // Display the response
         System.out.println(response);

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import com.jobappnetwork.protocol.Protocol;
 
 /**
  * Handles communication with a single client.
@@ -39,24 +40,60 @@ public class ClientHandler implements Runnable {
             out = new PrintWriter(clientSocket.getOutputStream(), true);
 
             // Process commands until the client disconnects
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                // Parse the command
-                int command = Integer.parseInt(inputLine);
+            while (!clientSocket.isClosed()) {
+                // Read the command from the client
+                String commandStr = in.readLine();
+                // System.out.println("Debug - ClientHandler: Received command string: " +
+                // commandStr);
 
-                // Process the command and get the response
-                String response = commandProcessor.processCommand(command);
+                if (commandStr == null) {
+                    // System.out.println("Debug - ClientHandler: Client disconnected (null
+                    // command)");
+                    break;
+                }
 
-                // Send the response back to the client
-                out.println(response);
+                try {
+                    int command = Integer.parseInt(commandStr);
+                    // System.out.println("Debug - ClientHandler: Processing command: " +
+                    // Protocol.getCommandName(command));
+                    String response;
 
-                // If the command requires additional data, read and process it
-                if (commandProcessor.requiresData(command)) {
-                    String data = in.readLine();
-                    if (data != null) {
+                    // Only try to read additional data for commands that require it
+                    if (commandProcessor.requiresData(command)) {
+                        // System.out.println("Debug - ClientHandler: Command requires data: " +
+                        // Protocol.getCommandName(command));
+                        String data = in.readLine();
+                        // System.out.println("Debug - ClientHandler: Additional data: " + data);
+                        if (data == null) {
+                            // System.out.println("Debug - ClientHandler: Data is null, sending error
+                            // response");
+                            out.println("ERROR: Missing data for command " + Protocol.getCommandName(command));
+                            out.println("END_RESPONSE");
+                            out.flush();
+                            continue;
+                        }
                         response = commandProcessor.processCommandWithData(command, data);
-                        out.println(response);
+                    } else {
+                        // System.out.println("Debug - ClientHandler: Command doesn't require additional
+                        // data");
+                        response = commandProcessor.processCommand(command);
                     }
+
+                    // Step 13: Send posting update to job seekers
+                    // System.out.println("Debug - ClientHandler: Sending response: " + response);
+                    // Send the response line by line
+                    for (String line : response.split("\n")) {
+                        out.println(line);
+                    }
+                    // Send end marker
+                    out.println("END_RESPONSE");
+                    out.flush(); // Ensure the response is sent immediately
+                } catch (NumberFormatException e) {
+                    // System.out.println("Debug - ClientHandler: Invalid command format: " +
+                    // commandStr);
+                    out.println("ERROR: Invalid command format");
+                    out.println("END_RESPONSE");
+                    out.flush();
                 }
             }
         } catch (IOException e) {

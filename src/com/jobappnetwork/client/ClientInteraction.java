@@ -21,7 +21,7 @@ public class ClientInteraction {
             socket = new Socket(SERVER_HOST, SERVER_PORT);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            System.out.println("Connected to server successfully.");
+            // System.out.println("Connected to server successfully.");
         } catch (IOException e) {
             System.err.println("Error connecting to server: " + e.getMessage());
         }
@@ -35,12 +35,27 @@ public class ClientInteraction {
      */
     public String sendCommand(int command) {
         try {
-            // Send the command to the server
+            // System.out.println("Debug - ClientInteraction: Sending command: " +
+            // Protocol.getCommandName(command));
             out.println(command);
+            out.flush();
 
-            // Read the server's response
-            String response = in.readLine();
-            return response;
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = in.readLine()) != null && !line.equals("END_RESPONSE")) {
+                response.append(line).append("\n");
+            }
+
+            String responseStr = response.toString();
+            if (responseStr.startsWith("ERROR:")) {
+                // System.out.println("Debug - ClientInteraction: Got error response from
+                // server: " + responseStr);
+                return responseStr;
+            }
+
+            // System.out.println("Debug - ClientInteraction: Got response from server: " +
+            // (responseStr.length() > 0 ? "not null" : "null"));
+            return responseStr;
         } catch (IOException e) {
             System.err.println("Error communicating with server: " + e.getMessage());
             return "ERROR: " + e.getMessage();
@@ -56,15 +71,33 @@ public class ClientInteraction {
      */
     public String sendCommandWithData(int command, String data) {
         try {
-            // Send the command to the server
+            // System.out.println("Debug - ClientInteraction: Sending command with data: " +
+            // Protocol.getCommandName(command));
+            // System.out.println("Debug - ClientInteraction: Command value: " + command);
+            // System.out.println("Debug - ClientInteraction: Data: " + data);
+
             out.println(command);
+            out.flush();
 
-            // Send the additional data
             out.println(data);
+            out.flush();
 
-            // Read the server's response
-            String response = in.readLine();
-            return response;
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = in.readLine()) != null && !line.equals("END_RESPONSE")) {
+                response.append(line).append("\n");
+            }
+
+            String responseStr = response.toString();
+            if (responseStr.startsWith("ERROR:")) {
+                // System.out.println("Debug - ClientInteraction: Got error response from
+                // server: " + responseStr);
+                return responseStr;
+            }
+
+            // System.out.println("Debug - ClientInteraction: Got response from server: " +
+            // (responseStr.length() > 0 ? "not null" : "null"));
+            return responseStr;
         } catch (IOException e) {
             System.err.println("Error communicating with server: " + e.getMessage());
             return "ERROR: " + e.getMessage();

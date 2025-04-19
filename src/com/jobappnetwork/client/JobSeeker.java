@@ -47,7 +47,7 @@ public class JobSeeker {
             System.out.println("1. View Available Jobs");
             System.out.println("2. Apply to a Job");
             System.out.println("3. View My Applications");
-            System.out.println("4. Back to Main Menu");
+            System.out.println("4. Disconnect from the server");
             System.out.print("Enter your choice: ");
 
             int choice = getIntInput();
@@ -80,10 +80,21 @@ public class JobSeeker {
     private void viewJobs(ClientInteraction clientInteraction) {
         System.out.println("\n===== AVAILABLE JOBS =====");
         // Send request to view jobs
+        // System.out.println("Debug - JobSeeker: Sending VIEW_JOBS command (" +
+        // Protocol.VIEW_JOBS + ")");
         String response = clientInteraction.sendCommand(Protocol.VIEW_JOBS);
+        // System.out.println("Debug - JobSeeker: Received response from server");
 
-        // Display the response
-        System.out.println(response);
+        // Display the response with proper formatting
+        if (response != null && !response.trim().isEmpty()) {
+            System.out.println("\n" + response);
+        } else {
+            System.out.println("\nNo jobs are currently available.");
+        }
+
+        // Add a pause to let user read the listings
+        System.out.println("\nPress Enter to continue...");
+        scanner.nextLine();
     }
 
     /**
@@ -118,13 +129,13 @@ public class JobSeeker {
                     return;
                 }
 
-                // Read the file and convert to Base64 
+                // Read the file and convert to Base64
                 FileInputStream fileInputStream = new FileInputStream(resumeFile);
                 byte[] fileBytes = new byte[(int) resumeFile.length()];
                 fileInputStream.read(fileBytes);
                 fileInputStream.close();
 
-                // Convert to Base64 
+                // Convert to Base64
                 resumeContent = Base64.getEncoder().encodeToString(fileBytes);
                 System.out.println("Resume file uploaded successfully.");
             } catch (IOException e) {
@@ -145,12 +156,12 @@ public class JobSeeker {
             return;
         }
 
-        // Send application to server
-        String response = clientInteraction.sendCommand(Protocol.APPLY_TO_JOB);
-
         // Send the application data
-        String applicationData = jobId + "|" + resumeContent;
-        response = clientInteraction.sendCommandWithData(Protocol.APPLY_TO_JOB, applicationData);
+        // Format: jobId|applicantId|resume
+        String applicationData = jobId + "|" + id + "|" + resumeContent;
+        // System.out.println("Debug - JobSeeker: Sending application data with jobId: "
+        // + jobId + ", applicantId: " + id);
+        String response = clientInteraction.sendCommandWithData(Protocol.APPLY_TO_JOB, applicationData);
 
         // Display the response
         System.out.println(response);
@@ -164,8 +175,10 @@ public class JobSeeker {
      */
     private void viewMyApplications(ClientInteraction clientInteraction) {
         System.out.println("\n===== MY APPLICATIONS =====");
-        // Send request to view applications
-        String response = clientInteraction.sendCommand(Protocol.VIEW_MY_APPLICATIONS);
+        // Step 11 & 14: Print out new application status and updated posting
+        // System.out.println("Debug - JobSeeker: Sending VIEW_MY_APPLICATIONS command
+        // with ID: " + id);
+        String response = clientInteraction.sendCommandWithData(Protocol.VIEW_MY_APPLICATIONS, id);
 
         // Display the response
         System.out.println(response);
