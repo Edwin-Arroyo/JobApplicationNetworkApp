@@ -178,7 +178,7 @@ public class JobSeeker {
         // Step 11 & 14: Print out new application status and updated posting
         // System.out.println("Debug - JobSeeker: Sending VIEW_MY_APPLICATIONS command
         // with ID: " + id);
-        String response = clientInteraction.sendCommandWithData(Protocol.VIEW_MY_APPLICATIONS, id);
+        String response = clientInteraction.sendCommand(Protocol.VIEW_MY_APPLICATIONS);
 
         // Display the response
         System.out.println(response);

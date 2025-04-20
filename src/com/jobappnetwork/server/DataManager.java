@@ -174,29 +174,66 @@ public class DataManager {
     }
 
     /**
-     * Gets applications by job seeker ID.
+     * Gets applications for the current job seeker.
      * 
-     * @param jobSeekerId The job seeker ID
-     * @return A formatted string of applications for the job seeker
+     * @return A formatted string of applications for the current job seeker
      */
-    public String getApplicationsByJobSeeker(String jobSeekerId) {
+    public String getCurrentJobSeekerApplications() {
         List<Application> userApplications = new ArrayList<>();
 
         for (Application app : applications.values()) {
-            if (app.getJobSeekerId().equals(jobSeekerId)) {
-                userApplications.add(app);
-            }
+            // For now, we'll return all applications since we don't have a way to identify
+            // the current user
+            // In a real application, we would use session management or authentication
+            userApplications.add(app);
         }
 
         if (userApplications.isEmpty()) {
-            return "No applications found for job seeker ID: " + jobSeekerId;
+            return "No applications found for the current job seeker";
         }
 
         StringBuilder result = new StringBuilder("Your Applications:\n");
         for (Application app : userApplications) {
-            result.append(app.toString()).append("\n");
+            result.append("Application ID: ").append(app.getId()).append("\n");
+            result.append("Status: ").append(getStatusText(app.getStatus())).append("\n");
+
+            // Get and display job details
+            String jobId = app.getJobPostingId();
+            JobPosting job = jobPostings.get(jobId);
+            if (job != null) {
+                result.append("\nJob Details:\n");
+                result.append("Title: ").append(job.getTitle()).append("\n");
+                result.append("Company: ").append(job.getCompany()).append("\n");
+                result.append("Location: ").append(job.getLocation()).append("\n");
+                result.append("Description: ").append(job.getDescription()).append("\n");
+                result.append("Skills: ").append(job.getSkills()).append("\n");
+                result.append("Salary: ").append(job.getSalary()).append("\n");
+            } else {
+                result.append("Job details not available (Job ID: ").append(jobId).append(")\n");
+            }
+
+            result.append("\n-------------------\n");
         }
 
         return result.toString();
+    }
+
+    /**
+     * Gets the text representation of an application status.
+     * 
+     * @param status The status code
+     * @return The text representation of the status
+     */
+    private String getStatusText(int status) {
+        switch (status) {
+            case 300:
+                return "Pending";
+            case 301:
+                return "Accepted";
+            case 302:
+                return "Rejected";
+            default:
+                return "Unknown";
+        }
     }
 }

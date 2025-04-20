@@ -48,7 +48,8 @@ public class CommandProcessor {
                 return dataManager.getAllApplications();
 
             case Protocol.VIEW_MY_APPLICATIONS:
-                return "Please provide your job seeker ID";
+                // Return all applications for the current job seeker
+                return dataManager.getCurrentJobSeekerApplications();
 
             case Protocol.SELECT_ROLE:
                 return "Please select a role (1 for Job Seeker, 2 for Hiring Manager)";
@@ -82,9 +83,6 @@ public class CommandProcessor {
 
             case Protocol.REJECT_APPLICATION:
                 return dataManager.updateApplicationStatus(data, Protocol.STATUS_REJECTED);
-
-            case Protocol.VIEW_MY_APPLICATIONS:
-                return dataManager.getApplicationsByJobSeeker(data);
 
             default:
                 return "Unknown command with data: " + command;

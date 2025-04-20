@@ -37,13 +37,13 @@ public class Server {
         serverSocket = new ServerSocket(port);
         running = true;
 
-        // System.out.println("Server started on port " + port);
+        System.out.println("Server is now listening for connections on port " + port);
 
         while (running) {
             try {
                 // Step 3: Accept connection request from client
                 Socket clientSocket = serverSocket.accept();
-                // System.out.println("New client connected: " + clientSocket.getInetAddress());
+                System.out.println("New connection accepted from: " + clientSocket.getInetAddress().getHostAddress());
 
                 // Create a new thread to handle the client
                 ClientHandler handler = new ClientHandler(clientSocket, commandProcessor);
@@ -77,7 +77,7 @@ public class Server {
      * @param args Command line arguments (not used)
      */
     public static void main(String[] args) {
-        int port = 5000; // Default port
+        int port = 8080; // Default port
 
         Server server = new Server(port);
         try {

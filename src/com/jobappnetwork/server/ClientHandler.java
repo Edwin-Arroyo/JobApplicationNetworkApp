@@ -39,6 +39,11 @@ public class ClientHandler implements Runnable {
             in = new BufferedReader(new java.io.InputStreamReader(clientSocket.getInputStream()));
             out = new PrintWriter(clientSocket.getOutputStream(), true);
 
+            // Print connection information
+            System.out.println("New client connected: " + clientSocket.getInetAddress().getHostAddress() + ":"
+                    + clientSocket.getPort());
+            System.out.println("Client handler started for: " + clientSocket.getInetAddress().getHostName());
+
             // Process commands until the client disconnects
             while (!clientSocket.isClosed()) {
                 // Read the command from the client
